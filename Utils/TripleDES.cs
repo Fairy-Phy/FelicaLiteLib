@@ -3,6 +3,9 @@ using System.Security.Cryptography;
 
 namespace FelicaLiteLib.Utils {
 
+	/// <summary>
+	/// トリプルDES実装
+	/// </summary>
 	internal class TripleDES : IDisposable {
 
 		readonly DESCryptoServiceProvider DES_A = new DESCryptoServiceProvider();

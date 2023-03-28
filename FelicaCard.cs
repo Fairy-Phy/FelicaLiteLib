@@ -4,30 +4,71 @@ using System;
 
 namespace FelicaLiteLib {
 
+	/// <summary>
+	/// Felicaカードのクラス。
+	/// ここで様々なカード情報の処理が行なえます。
+	/// </summary>
 	public class FelicaCard {
 
+		/// <summary>
+		/// デバイスクラス
+		/// 基本的にいじるものではありません。
+		/// </summary>
 		public FelicaDevice Device { get; private set; }
 
+		/// <summary>
+		/// カードのIDm
+		/// </summary>
 		public byte[] IDm => Device.Felica_C.GetIDm();
 
+		/// <summary>
+		/// カードのPMm
+		/// </summary>
 		public byte[] PMm => Device.Felica_C.GetPMm();
 
+		/// <summary>
+		/// 現在の読み込みシステムコード
+		/// </summary>
 		public ushort CurrentSystemCode => Device.Felica_C.GetSystemCode();
 
+		/// <summary>
+		/// RCブロック
+		/// </summary>
 		public byte[] RC { get; private set; }
 
+		/// <summary>
+		/// RCブロックが書き込まれたか
+		/// </summary>
 		public bool WroteRC { get; private set; } = false;
 
 		internal FelicaCard(FelicaDevice Device) {
 			this.Device = Device;
 		}
 
+		/// <summary>
+		/// ポーリングをします。接続確認をする場合に使用します。
+		/// </summary>
+		/// <param name="System_Code"></param>
+		/// <param name="TimeSlot"></param>
+		/// <returns>指定された<paramref name="System_Code"/>で接続されたか</returns>
 		public bool Polling(SystemCode System_Code, byte TimeSlot = 0)
 			=> Polling((ushort) System_Code, TimeSlot);
 
+		/// <summary>
+		/// ポーリングをします。接続確認をする場合に使用します。
+		/// </summary>
+		/// <remarks>通常こちらは使用するべきではありません</remarks>
+		/// <param name="System_Code"></param>
+		/// <param name="TimeSlot"></param>
+		/// <returns>指定された<paramref name="System_Code"/>で接続されたか</returns>
 		public bool Polling(ushort System_Code, byte TimeSlot = 0)
 			=> Device.Polling(System_Code, TimeSlot);
 
+		/// <summary>
+		/// 接続されたカードのシステムコード一覧を取得します
+		/// </summary>
+		/// <returns>システムコード一覧</returns>
+		/// <exception cref="FelicaException"></exception>
 		public ushort[] GetSystemCodeList() {
 			ushort PrevSystemCode = CurrentSystemCode;
 
@@ -75,9 +116,23 @@ namespace FelicaLiteLib {
 		
 		*/
 
+		/// <summary>
+		/// MACなしでブロックに読み込みます
+		/// </summary>
+		/// <param name="Service_Code"></param>
+		/// <param name="Addr"></param>
+		/// <returns>指定ブロックの読込結果</returns>
 		public byte[] ReadWithoutEncryption(ServiceCode Service_Code, Block Addr)
 			=> ReadWithoutEncryption((int) Service_Code, (byte) Addr);
 
+		/// <summary>
+		/// MACなしでブロックに読み込みます
+		/// </summary>
+		/// <remarks>通常こちらは使用するべきではありません</remarks>
+		/// <param name="Service_Code"></param>
+		/// <param name="Addr"></param>
+		/// <returns>指定ブロックの読込結果</returns>
+		/// <exception cref="FelicaException"></exception>
 		public byte[] ReadWithoutEncryption(int Service_Code, byte Addr) {
 			if (!Polling(Device.Felica_C.GetSystemCode()))
 				throw new FelicaException("接続が維持されていません");
@@ -88,6 +143,14 @@ namespace FelicaLiteLib {
 			return Res;
 		}
 
+		/// <summary>
+		/// MACを使用してブロックに読み込みます
+		/// </summary>
+		/// <param name="Service_Code"></param>
+		/// <param name="Addr"></param>
+		/// <param name="MasterKey"></param>
+		/// <returns>指定ブロックの読込結果</returns>
+		/// <exception cref="FelicaException"></exception>
 		public byte[] ReadWithoutEncryptionWithMAC_A(ServiceCode Service_Code, Block Addr, byte[] MasterKey) {
 			byte[] ReadedBytes =
 				ReadWithoutEncryptionManual(Service_Code, Block.ID, Addr, Block.MAC_A );
@@ -114,9 +177,24 @@ namespace FelicaLiteLib {
 			return Res;
 		}
 
+		/// <summary>
+		/// MACなしでブロックに書き込みます
+		/// </summary>
+		/// <param name="Service_Code"></param>
+		/// <param name="Addr"></param>
+		/// <param name="Data"></param>
 		public void WriteWithoutEncryption(ServiceCode Service_Code, Block Addr, byte[] Data)
 			=> WriteWithoutEncryption((int) Service_Code, (byte) Addr, Data);
 
+		/// <summary>
+		/// MACなしでブロックに書き込みます
+		/// </summary>
+		/// <remarks>通常こちらは使用するべきではありません</remarks>
+		/// <param name="Service_Code"></param>
+		/// <param name="Addr"></param>
+		/// <param name="Data"></param>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		/// <exception cref="FelicaException"></exception>
 		public void WriteWithoutEncryption(int Service_Code, byte Addr, byte[] Data) {
 			if (Data.Length != 16)
 				throw new ArgumentOutOfRangeException(nameof(Data), "データは16バイトである必要があります");
@@ -127,6 +205,15 @@ namespace FelicaLiteLib {
 				throw new FelicaException("書き込みできませんでした");
 		}
 
+		/// <summary>
+		/// MACを使用してブロックに書き込みます
+		/// </summary>
+		/// <param name="Service_Code"></param>
+		/// <param name="Addr"></param>
+		/// <param name="Data"></param>
+		/// <param name="MasterKey"></param>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		/// <exception cref="FelicaException"></exception>
 		public void WriteWithoutEncryptionWithMAC_A(ServiceCode Service_Code, Block Addr, byte[] Data, byte[] MasterKey) {
 			if (Data.Length != 16)
 				throw new ArgumentOutOfRangeException(nameof(Data), "データは16バイトである必要があります");
@@ -224,6 +311,11 @@ namespace FelicaLiteLib {
 			WroteRC = true;
 		}
 
+		/// <summary>
+		/// 内部認証をします
+		/// </summary>
+		/// <param name="MasterKey"></param>
+		/// <returns>内部認証されたか</returns>
 		public bool InternalAuthenticationMAC_A(byte[] MasterKey) {
 			CheckFelicaLiteS();
 
@@ -250,6 +342,11 @@ namespace FelicaLiteLib {
 			else return true;
 		}
 
+		/// <summary>
+		/// 外部認証をします
+		/// </summary>
+		/// <param name="MasterKey"></param>
+		/// <returns>外部認証されたか</returns>
 		public bool ExternalAuthenticationMAC_A(byte[] MasterKey) {
 			CheckFelicaLiteS();
 
@@ -294,6 +391,11 @@ namespace FelicaLiteLib {
 			return true;
 		}
 
+		/// <summary>
+		/// 相互認証をします
+		/// </summary>
+		/// <param name="MasterKey"></param>
+		/// <returns>相互認証されたか</returns>
 		public bool MutualAuthenticationMAC_A(byte[] MasterKey) {
 			CheckFelicaLiteS();
 

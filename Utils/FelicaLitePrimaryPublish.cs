@@ -4,13 +4,22 @@ using System;
 namespace FelicaLiteLib.Utils {
 
 	/// <summary>
-	/// Felica Lite用一次発行関数
+	/// Felica Lite用一次発行をする拡張クラスです
 	/// </summary>
 	/// <remarks>
 	/// MC[0~1][6~11]は二次発行で行います。
 	/// </remarks>
 	public static class FelicaLitePrimaryPublish {
 
+		/// <summary>
+		/// IDを設定します。
+		/// </summary>
+		/// <param name="Card"></param>
+		/// <param name="ID"></param>
+		/// <param name="DFD"></param>
+		/// <param name="ForceWrite"></param>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		/// <exception cref="FelicaException"></exception>
 		public static void WriteID(this FelicaCard Card, byte[] ID, byte[] DFD = null, bool ForceWrite = false) {
 			if (DFD is null) DFD = new byte[2] { 0x00, 0x00 };
 			if (DFD.Length != 2)
@@ -40,6 +49,16 @@ namespace FelicaLiteLib.Utils {
 			Card.WriteWithoutEncryption(ServiceCode.ReadWrite, Block.ID, WriteBytes);
 		}
 
+		/// <summary>
+		/// CK(カード鍵)を設定します。
+		/// </summary>
+		/// <remarks>
+		/// CKは<paramref name="MasterKey"/>から変換されます
+		/// </remarks>
+		/// <param name="Card"></param>
+		/// <param name="MasterKey"></param>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
+		/// <exception cref="FelicaException"></exception>
 		public static void WriteCK(this FelicaCard Card, byte[] MasterKey) {
 			if (MasterKey.Length != 24)
 				throw new ArgumentOutOfRangeException(nameof(MasterKey), "Kの要素数は24である必要があります");
@@ -67,9 +86,21 @@ namespace FelicaLiteLib.Utils {
 			}
 		}
 
+		/// <summary>
+		/// CKV(カード鍵バージョン)を設定します。
+		/// </summary>
+		/// <param name="Card"></param>
+		/// <param name="Key_Version"></param>
+		/// <param name="ForceWrite"></param>
 		public static void WriteCKV(this FelicaCard Card, ushort Key_Version, bool ForceWrite = false)
 			=> Card.WriteCKV(BitConverter.GetBytes(Key_Version), ForceWrite);
 
+		/// <summary>
+		/// CKV(カード鍵バージョン)を設定します。
+		/// </summary>
+		/// <param name="Card"></param>
+		/// <param name="Key_Version"></param>
+		/// <param name="ForceWrite"></param>
 		public static void WriteCKV(this FelicaCard Card, byte[] Key_Version, bool ForceWrite = false) {
 			if (Key_Version.Length != 2)
 				throw new ArgumentOutOfRangeException(nameof(Key_Version), "Key_Versionの要素数は2である必要があります");
@@ -95,7 +126,7 @@ namespace FelicaLiteLib.Utils {
 		}
 
 		/// <summary>
-		/// 
+		/// 一次発行時に設定するMCを設定します。
 		/// </summary>
 		/// <remarks>
 		/// <paramref name="WriteSTATEWithMAC"/>は既に<see cref="true"/>で設定されている場合に<see cref="false"/>で書き込もうとした場合例外を返します

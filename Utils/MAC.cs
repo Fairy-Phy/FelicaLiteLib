@@ -3,10 +3,13 @@ using System;
 
 namespace FelicaLiteLib.Utils {
 
+	/// <summary>
+	/// MACつき読み書きをする際に使用するMAC生成クラスです。
+	/// </summary>
 	public static class MAC {
 
 		/// <summary>
-		/// 
+		/// 読み込み時のMACを生成します
 		/// </summary>
 		/// <param name="RC"></param>
 		/// <param name="CK"></param>
@@ -73,6 +76,16 @@ namespace FelicaLiteLib.Utils {
 			return MAC_A;
 		}
 
+		/// <summary>
+		/// 書き込み時のMACを生成します
+		/// </summary>
+		/// <param name="RC"></param>
+		/// <param name="CK"></param>
+		/// <param name="WCNT"></param>
+		/// <param name="FirstBlock"></param>
+		/// <param name="Data"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentOutOfRangeException"></exception>
 		public static byte[] GenerateWriteMAC_A(byte[] RC, byte[] CK, byte[] WCNT, Block FirstBlock, byte[] Data) {
 			if (Data.Length != 16)
 				throw new ArgumentOutOfRangeException(nameof(Data), "データは16バイトである必要があります");

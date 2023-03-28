@@ -3,11 +3,28 @@ using System.Linq;
 
 namespace FelicaLiteLib.Utils {
 
+	/// <summary>
+	/// セッション鍵を生成するクラス
+	/// </summary>
 	public static class SessionKey {
 
+		/// <summary>
+		/// セッション鍵を生成します。
+		/// こちらはCKをIDとMasterKeyから生成する場合に使用します
+		/// </summary>
+		/// <param name="RC"></param>
+		/// <param name="ID"></param>
+		/// <param name="MasterKey"></param>
+		/// <returns></returns>
 		public static (byte[], byte[]) Generate(byte[] RC, byte[] ID, byte[] MasterKey)
 			=> Generate(RC, CardKey.Generate(MasterKey, ID));
 
+		/// <summary>
+		/// セッション鍵を生成します。
+		/// </summary>
+		/// <param name="RC"></param>
+		/// <param name="CK"></param>
+		/// <returns></returns>
 		public static (byte[], byte[]) Generate(byte[] RC, byte[] CK) {
 			byte[] RC1, RC2;
 			RC1 = new byte[8];

@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace FelicaLiteLib.Wrapper {
 
+	/// <summary>
+	/// <seealso cref="FelicaDevice"/>ラッパー関数から返されるデータクラス
+	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
 	public class FelicaC {
 

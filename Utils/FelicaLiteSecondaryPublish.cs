@@ -2,9 +2,21 @@
 
 namespace FelicaLiteLib.Utils {
 
+	/// <summary>
+	/// Felica Lite用二次発行拡張クラスです
+	/// </summary>
 	public static class FelicaLiteSecondaryPublish {
 
-		// ブロックをRO/RW設定する。ROにすると以後書き込めない
+		/// <summary>
+		/// MC_SP_REG_ALL_RWを設定します。
+		/// </summary>
+		/// <remarks>
+		/// MC[1] 7bitをROにすると以後このブロックには書き込めないようになるため注意
+		/// </remarks>
+		/// <param name="Card"></param>
+		/// <param name="MC0">MC[0]</param>
+		/// <param name="MC1">MC[1]</param>
+		/// <exception cref="FelicaException">MC[1] 7bitがROに設定されている場合になります</exception>
 		public static void WriteMC_RW(this FelicaCard Card, byte MC0, byte MC1) {
 			byte[] WriteBytes = Card.ReadWithoutEncryption(ServiceCode.ReadOnly, Block.MC);
 			if (((WriteBytes[1] & 0b1000_0000) >> 7) != 1)
@@ -18,7 +30,13 @@ namespace FelicaLiteLib.Utils {
 			Card.WriteWithoutEncryption(ServiceCode.ReadWrite, Block.MC, WriteBytes);
 		}
 
-		// ブロックの読み込みに外部認証を挟むかの設定
+		/// <summary>
+		/// MC_SP_REG_R_RESTRを設定します。
+		/// </summary>
+		/// <param name="Card"></param>
+		/// <param name="MC6">MC[6]</param>
+		/// <param name="MC7">MC[7]</param>
+		/// <exception cref="FelicaException"></exception>
 		public static void WriteMC_AuthRead(this FelicaCard Card, byte MC6, byte MC7) {
 			byte[] WriteBytes = Card.ReadWithoutEncryption(ServiceCode.ReadOnly, Block.MC);
 			if (((WriteBytes[1] & 0b1000_0000) >> 7) != 1)
@@ -32,7 +50,13 @@ namespace FelicaLiteLib.Utils {
 			Card.WriteWithoutEncryption(ServiceCode.ReadWrite, Block.MC, WriteBytes);
 		}
 
-		// ブロックの書き込みに外部認証を挟むかの設定
+		/// <summary>
+		/// MC_SP_REG_W_RESTRを設定します。
+		/// </summary>
+		/// <param name="Card"></param>
+		/// <param name="MC8">MC[8]</param>
+		/// <param name="MC9">MC[9]</param>
+		/// <exception cref="FelicaException"></exception>
 		public static void WriteMC_AuthWrite(this FelicaCard Card, byte MC8, byte MC9) {
 			byte[] WriteBytes = Card.ReadWithoutEncryption(ServiceCode.ReadOnly, Block.MC);
 			if (((WriteBytes[1] & 0b1000_0000) >> 7) != 1)
@@ -46,7 +70,13 @@ namespace FelicaLiteLib.Utils {
 			Card.WriteWithoutEncryption(ServiceCode.ReadWrite, Block.MC, WriteBytes);
 		}
 
-		// ブロックの書き込みにMAC_A署名を挟むかの設定
+		/// <summary>
+		/// MC_SP_REG_W_MAC_Aを設定します。
+		/// </summary>
+		/// <param name="Card"></param>
+		/// <param name="MC10"></param>
+		/// <param name="MC11"></param>
+		/// <exception cref="FelicaException"></exception>
 		public static void WriteMC_ReqWriteMAC_A(this FelicaCard Card, byte MC10, byte MC11) {
 			byte[] WriteBytes = Card.ReadWithoutEncryption(ServiceCode.ReadOnly, Block.MC);
 			if (((WriteBytes[1] & 0b1000_0000) >> 7) != 1)

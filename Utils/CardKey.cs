@@ -2,10 +2,19 @@
 
 namespace FelicaLiteLib.Utils {
 
+	/// <summary>
+	/// CKの生成クラス
+	/// </summary>
 	public static class CardKey {
 
 		static readonly byte[] PlaneText = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
+		/// <summary>
+		/// CKを生成します
+		/// </summary>
+		/// <param name="K"></param>
+		/// <param name="M"></param>
+		/// <returns></returns>
 		public static byte[] Generate(byte[] K, byte[] M) {
 			byte[] KA, KB, KC;
 			KA = new byte[8];

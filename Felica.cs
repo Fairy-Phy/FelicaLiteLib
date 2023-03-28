@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace FelicaLiteLib {
 
+	/// <summary>
+	/// Felicaリーダーのポーリング処理を制御するクラスです。
+	/// ここでイベント処理を追加してポーリングをすると使用できます。
+	/// </summary>
 	public class Felica : IDisposable {
 
+		/// <summary>
+		/// ポーリングに成功した時に発火するイベントです
+		/// </summary>
 		public event EventHandler<CardSetEventHandlerArgs> CardSetEvent;
 
 		private readonly FelicaDevice _Device;
@@ -33,6 +40,10 @@ namespace FelicaLiteLib {
 			return Task.CompletedTask;
 		}
 
+		/// <summary>
+		/// ポーリングを開始します。
+		/// </summary>
+		/// <param name="System_Code">ポーリング対象のシステムコード</param>
 		public void StartPolling(SystemCode System_Code) {
 			if (cts is null) {
 				cts = new CancellationTokenSource();
@@ -42,6 +53,12 @@ namespace FelicaLiteLib {
 			}
 		}
 
+		/// <summary>
+		/// ポーリングを終了します。
+		/// </summary>
+		/// <remarks>
+		/// ポーリング成功時は自動的に呼び出されます。
+		/// </remarks>
 		public void StopPolling() {
 			if (cts is null) return;
 			if (cts.IsCancellationRequested) return;
